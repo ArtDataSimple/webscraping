@@ -1,0 +1,49 @@
+# The scraper
+# Here's a list of what we need to do, in the exact order:
+
+# Create a CSV file, open it, make it writeable
+# Create a CSV writer to write data
+# Write the column headers to the file
+# Tell your computer which site(s) to visit
+# Get the webpage, download HTML
+# Create soup to...
+# Select data from the soup aka webpage
+# Write data with the CSV writer to the CSV file
+# Save file
+
+
+# create a csv file to save data in
+f = open('scrapedData.csv', 'w', encoding='utf8', newline='')
+# create a writer to write data with to the newly created csv-file
+writer = csv.writer(f, delimiter=',')
+# use the writer to write the first row, the column headers, to the file
+writer.writerow(['plantNamedocketNumber', 'licenseNumber', 'reactorType', 
+                 'location', 'OwnerOperator', 'NRCRegion'])
+# set page you want to visit
+url = 'https://www.nrc.gov/reactors/operating/list-power-reactor-units.html'
+# request html of page using the request library
+page = requests.get(url)
+# create soup - parse HTML of webpage
+soup = BeautifulSoup(page.content, 'html.parser')
+# select table from soup
+table = soup.find('table')
+# for every row in table...
+for row in table.find_all('tr'):
+        # ...save the data in each cell to cells
+        cells = row.find_all(['th', 'td'])
+        # ...get the data from each of the 6 cells and save to variables
+        plantNamedocketNumber = cells[0].text
+        licenseNumber = cells[1].text
+        reactorType = cells[2].text
+        location = cells[3].text
+        OwnerOperator = cells[4].text
+        NRCRegion = cells[5].text
+        # ...collect all data in row called rowData
+        rowData = [plantNamedocketNumber, licenseNumber, reactorType, location, OwnerOperator, NRCRegion]
+        # ...write the data to the CSV file
+        writer.writerow(rowData)
+        
+# note that the indention ends here...
+# the next assignment does not need to be done for every row in table;
+# just closing the file once will do :)
+f.close()
